@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-#require 'carrierwave/processing/mime_types'
+# require 'carrierwave/processing/mime_types'
 
 class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
 
@@ -79,11 +79,8 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
   #if the folder is fixed and !digest_filename is true  ,we use the opiginal_filename
   #if set use_original_filename ,we use the opiginal_filename
   def filename
-    if RailsKindeditor.use_original_filename || (fixed_folder && !digest_filename)
-      super
-    elsif  original_filename
-      @name ||= Digest::MD5.hexdigest(File.dirname(current_path)).slice(0, 12)
-      "#{@name}.#{file.extension}"
+    if original_filename
+      "#{SecureRandom.uuid}.#{file.extension}"
     end
   end
 
@@ -109,4 +106,3 @@ class Kindeditor::AssetUploader < CarrierWave::Uploader::Base
   end
 
 end
-

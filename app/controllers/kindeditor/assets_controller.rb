@@ -1,7 +1,7 @@
 #coding: utf-8
 require "find"
 class Kindeditor::AssetsController < ApplicationController
-  skip_before_filter :verify_authenticity_token
+  skip_before_action :verify_authenticity_token
   def create
     @imgFile, @dir, @fixed_folder,@digest_filename = params[:imgFile], params[:dir], params[:fixed_folder],params[:digest_filename]
 
@@ -10,12 +10,12 @@ class Kindeditor::AssetsController < ApplicationController
         begin
           @asset = "Kindeditor::#{@dir.camelize}".constantize.new(:asset => @imgFile,:fixed_folder => @fixed_folder)
 
-          @asset.private_path = current_user.private_editor_resource_path if current_user && current_user.respond_to?(:private_editor_resource_path)
+          @asset.private_path = current_admin.private_editor_resource_path if current_admin && current_admin.respond_to?(:private_editor_resource_path)
           @asset.owner_id = params[:owner_id] ? params[:owner_id] : 0
           logger.warn '========= Warning: the owner_id is 0, "delete uploaded files automatically" will not work. =========' if defined?(logger) && @asset.owner_id == 0
           @asset.asset_type = @dir
           if @asset.save
-            render :text => ({:error => 0, :url => @asset.asset.url}.to_json)
+            render :inline => ({:error => 0, :url => @asset.asset.url}.to_json)
           else
             show_error(@asset.errors.full_messages)
           end
@@ -25,11 +25,11 @@ class Kindeditor::AssetsController < ApplicationController
       else # do not touch database
         begin
           uploader = "Kindeditor::#{@dir.camelize}Uploader".constantize.new
-          uploader.private_path = current_user.private_editor_resource_path if current_user && current_user.respond_to?(:private_editor_resource_path)
+          uploader.private_path = current_admin.private_editor_resource_path if current_admin && current_admin.respond_to?(:private_editor_resource_path)
           uploader.fixed_folder = @fixed_folder
           uploader.digest_filename = @digest_filename
           uploader.store!(@imgFile)
-          render :text => ({:error => 0, :url => uploader.url}.to_json)
+          render :inline => ({:error => 0, :url => uploader.url}.to_json)
         rescue CarrierWave::UploadError => e
           show_error(e.message)
         rescue Exception => e
@@ -44,14 +44,14 @@ class Kindeditor::AssetsController < ApplicationController
   def list
     @root_path = "#{Rails.public_path}/#{RailsKindeditor.upload_store_dir}/"
     @root_url = "/#{RailsKindeditor.upload_store_dir}/"
-    if current_user && current_user.respond_to?(:private_editor_resource_path)
-      @root_path = "#{Rails.public_path}/#{RailsKindeditor.upload_store_dir}/#{current_user.private_editor_resource_path}/"
-      @root_url = "/#{RailsKindeditor.upload_store_dir}/#{current_user.private_editor_resource_path}/"
+    if current_admin && current_admin.respond_to?(:private_editor_resource_path)
+      @root_path = "#{Rails.public_path}/#{RailsKindeditor.upload_store_dir}/#{current_admin.private_editor_resource_path}/"
+      @root_url = "/#{RailsKindeditor.upload_store_dir}/#{current_admin.private_editor_resource_path}/"
     end
     @img_ext = Kindeditor::AssetUploader::EXT_NAMES[:image]
     @dir = params[:dir].strip || ""
     unless Kindeditor::AssetUploader::EXT_NAMES.keys.map(&:to_s).push("").include?(@dir)
-      render :text => "Invalid Directory name."
+      render :inline => "Invalid Directory name."
       return
     end
 
@@ -80,15 +80,15 @@ class Kindeditor::AssetsController < ApplicationController
     end
     @order = %w(name size type).include?(params[:order].downcase) ? params[:order].downcase : "name"
     if !@current_path.match(/\.\./).nil?
-      render :text => "Access is not allowed."
+      render :inline => "Access is not allowed."
       return
     end
     if @current_path.match(/\/$/).nil?
-      render :text => "Parameter is not valid."
+      render :inline => "Parameter is not valid."
       return
     end
     if !File.exist?(@current_path) || !File.directory?(@current_path)
-      render :text => "Directory does not exist."
+      render :inline => "Directory does not exist."
       return
     end
     @file_list = []
@@ -125,12 +125,12 @@ class Kindeditor::AssetsController < ApplicationController
     @result[:current_url] = @current_url
     @result[:total_count] = @file_list.count
     @result[:file_list] = @file_list
-    render :text => @result.to_json
+    render :inline => @result.to_json
   end
 
   private
   def show_error(msg)
-    render :text => ({:error => 1, :message => msg}.to_json)
+    render :inline => ({:error => 1, :message => msg}.to_json)
   end
 
 end

@@ -136,7 +136,7 @@ Warning: Kindeditor will load after all the objects loaded.
   # or
   <%= form.input :content, :as => :kindeditor, :label => false, :input_html => { :width => 800, :height => 300 } %>
 ```
-  
+
 ### formtastic:
 
 ```ruby
@@ -163,7 +163,7 @@ You can get content like this:
 ## Upload options configuration
 
 When you run "rails generate rails_kindeditor:install", installer will copy configuration files in config/initializers folder.
-You can customize some option for uploading. 
+You can customize some option for uploading.
 
 ```ruby
   # Specify the subfolders in public directory.
@@ -175,14 +175,14 @@ You can customize some option for uploading.
   config.upload_flash_ext = %w[swf flv]
   config.upload_media_ext = %w[swf flv mp3 wav wma wmv mid avi mpg asf rm rmvb]
   config.upload_file_ext = %w[doc docx xls xlsx ppt htm html txt zip rar gz bz2]
- 
-  # If you don't want use the original file name (carrierwave carry) 
+
+  # If you don't want use the original file name (carrierwave carry)
   config.use_original_filename = false
 
-  # and if you use fixed_folder it will use the original file name 
+  # and if you use fixed_folder it will use the original file name
   <%= form.kindeditor :content, fixed_folder: 'game/img' %>
 
-  # if you use fixed_folder and you don't use the original file name ,you can add digest_filename = true 
+  # if you use fixed_folder and you don't use the original file name ,you can add digest_filename = true
 
   <%= form.kindeditor :content, fixed_folder: 'game/img',digest_filename: true %>
 
@@ -252,20 +252,20 @@ Warnning: the @article must be created before this scene, the @article.id should
 ####4 If you want a private folder for every user (eg: in sns website),add a method: private_editor_resource_path,
 
 ```ruby
-  class User < ActiveRecord::Base 
+  class User < ActiveRecord::Base
     def private_editor_resource_path
       @private_path ||= Digest::MD5.hexdigest(SecretPathKey + self.id.to_s)[0..10]
-    end 
+    end
   end
-``` 
-####4 If you want a fixed_folder for special scence,you can set fixed_folder options 
+```
+####4 If you want a fixed_folder for special scence,you can set fixed_folder options
 
 ```ruby
     <%= f.kindeditor :content,fixed_folder: "custom_folder" %>
-``` 
+```
 
 ```ruby
-Note: you must need another controller method: current_user (current login user)
+Note: you must need another controller method: current_admin (current login user)
 ```
 
 ### If you're using mongoid, please add 'gem "carrierwave-mongoid"' in your Gemfile
@@ -339,9 +339,9 @@ rails_kindeditor可以帮助你的rails程序集成kindeditor,包括了图片和
 ```ruby
   kindeditor_tag :content, 'default content value', :simple_mode => true
   f.kindeditor :content, :simple_mode => true
-  f.input :content, :as => :kindeditor, :input_html => { :simple_mode => true } # simple_form & formtastic  
+  f.input :content, :as => :kindeditor, :input_html => { :simple_mode => true } # simple_form & formtastic
 ```
-     
+
 完毕！
 
 ### 如何在turbolinks下使用
