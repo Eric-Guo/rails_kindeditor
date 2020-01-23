@@ -13,8 +13,6 @@ Gem::Specification.new do |s|
   s.description = "rails_kindeditor will helps your rails app integrate with kindeditor, including images and files uploading."
   s.license = 'MIT'
 
-  s.rubyforge_project = "rails_kindeditor"
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_paths = ["lib"]
